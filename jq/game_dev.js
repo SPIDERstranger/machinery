@@ -14,13 +14,12 @@ var qkeycard = 0;
  * 当前存储的能量数量
  */
 var money = 0;
-var charge = 0;
 /**
  * 当前轮回总计产生的能量
  */
 var total_money = 0;//total money generated within the prestige cycle
 /**
- * 本次轮回的反物质立方数量
+ * 本次轮回获取的反物质立方数量
  */
 var antimatter = 0;//prestige currency during the session 
 /**
@@ -111,13 +110,25 @@ var researchRNG;//contains pre-generated rlab data
  * 磁控管倍率
  */
 var magnetron_multiplier;
+/**
+ * 溢出乘数
+ */
 var am_radiation_multiplier = 1;//set to 1 here; will be a different value only when antimatter_cubes==0, which is almost never, so I don't want to explicitly set it to 1 in nAC() every time
 
 //PRESTIGE (most items here are not reset after prestige)
 //these are set up here, outside of Init(), because they are consistent across prestige cycles
 const AM_BASE_COST = 1e9;
+/**
+ * 上次获取立方所需总计能源
+ */
 var prevAntimatterCost = 0;
+/**
+ * 下次获取立方所需总计能源
+ */
 var nextAntimatterCost = 0;//how much energy needs to be generated till next antimatter particle is awarded;
+/**
+ * 总计获得的反物质立方数量
+ */
 var all_time_antimatter = 0;//works across cycles and is used in the antimatter formula, but says nothing regarding how much antimatter cubes you own, since depends on all_time_money only
 /**
  * 总共生产的反物质立方的数量,但不包含本次轮回生产的反物质立方
@@ -154,10 +165,22 @@ var money_limit_upgrade_price_init = 10;//this will depend on the prestige multi
  * 购买扭曲升级的反物质立方价格
  */
 var warp_price = 5;
+/**
+ * 扭曲升级的价格提升倍率
+ */
 var warp_price_rate = 10;
 var warp_panel1_upgrade_flag = 1;
+/**
+ * 扭曲升级 自动购买发电机供应和电源
+ */
 var warp_panel2_upgrade_flag = 0;
+/**
+ * 扭曲升级 自动购买实验室升级项目
+ */
 var warp_panel3_upgrade_flag = 0;
+/**
+ * 扭曲升级 机器的最大购买 
+ */
 var warp_panel4_upgrade_flag = 0;
 var warp_rank1_training1_flag = 0;
 /**
@@ -192,6 +215,10 @@ var buff_challenge1_flag = 0;//this is set to 3 in rebootOk(), since it's warple
 
 var buff_challenge2_flag = 0;
 
+/**
+ * 同步加速器,隐藏升级1,当同步加速器三个符号组成某一个组合,则开启.  
+ * 减少铸造厂的浪费上限.
+ */
 var secret1_flag = 0;
 var secret2_flag = 0;
 
@@ -211,8 +238,17 @@ var quf_temp_bag = [0, 0, 0, 0, 0, 0];
 
 
 //PRESTIGE SPECIAL VARIABLES
+/**
+ * 磁控管持续时间
+ */
 var warp_max_magnetron_duration = 60;//default max magnetron duration; later upgraded to 120
+/**
+ * 磁控管电源基础倍率
+ */
 var warp_max_magnetron_multiplier = 10;//default max magnetron multiplier; later upgraded to 20
+/**
+ * 磁控管声音警报
+ */
 var warp_magnetron_alerting = 0;//default value, later upgraded to 1
 
 /**
@@ -226,24 +262,48 @@ var prestige_flag = 0;//to differentiate between inspecting prices and actually 
 
 //INTERDIMENSIONAL WARP
 const POS_BASE_COST = 1e6;//positron base cost
+/**
+ * 当前轮回生产的正电子数量
+ */
 var positrons = 0;//positrons generated this cycle
+/**
+ * 总计生产的正电子数量
+ */
 var all_time_positrons = 0;
+/**
+ * 持有的正电子立方数量
+ */
 var positron_cubes = 0;// 暂未使用 cubes that were actually transfered, but this is currently not used and all_time_positron_cubes is used for everything instead, as we reset the amount of all_time_positron_cubes with every ppa_reset
 var positron_cubes_spent = 0;//cubes that were transferred and spent 暂未使用
 /**
  * 总共生产的正电子立方数量,暂时是持有数量
  */
 var all_time_positron_cubes = 0;//all time cubes created, regardless of whether they were transferred or spent
+/**
+ * 上次生产正电子立方所需正电子数量
+ */
 var prevPositronCubesCost = 0;
+/**
+ * 下次生产正电子立方所需正电子数量
+ */
 var nextPositronCubesCost = 0;
 
 //Power Plant Arena (PPA)
+/**
+ * 已建成发电厂数量
+ */
 var powerplants_amount = 0;//amount of powerplants built
+/**
+ * 时间倍率 数值越小,速度越快
+ */
 var time_fundamental = 1;//0.25 when upgraded
 /**
  * 反物质放大器的额外倍率,通过升级和量子升级提升
  */
 var powerplants_multiplier = 1;//quantum amplifier
+/**
+ * 电源厂升级所需的价格（已建成发电厂数量）
+ */
 var ppa_upgrade_price = 1;
 
 
@@ -571,9 +631,21 @@ var radiator_state = 0;
  */
 var gambling_state = 0;
 //BATTERY
+/**
+ * 电池持有电量
+ */
 var charge = 0;
+/**
+ * 电池容量上限
+ */
 var charge_limit = 50;
+/**
+ * 电池上限升级所需价格
+ */
 var charge_limit_upgrade_price;
+/**
+ * 解锁电池所需能量价格
+ */
 var battery_unlock_upgrade_price;
 /**
  * 电池充电百分比 
@@ -592,6 +664,10 @@ var magnetron_duration;
 var magnetron_multiplier_upgrade_price;
 var magnetron_duration_upgrade_price;
 var magnetron_probability_max = 2000;//how likely is the magnetron to be armed
+/**
+ * 磁控管触发时ROLL出来的符号  
+ * 范围: 0~5
+ */
 var magnetron_choice = 999;//which symbol was chosen; 999 means no symbol is chosen
 //engden
 /**
@@ -603,6 +679,9 @@ var auxiliary_effectiveness2;
 var auxiliary_probability_max = 150;//how fast couplings get misaligned
 var aux_eff_unit = 50;
 //lifeforms scanner
+/**
+ * 生命形式容器，记录每一个生命形式的数量
+ */
 var lifeforms_collection = [0, 0, 0, 0, 0, 0, 0, 0];
 var animal1_bonus_multiplier = 0;//this is 0, because it is being added to bonus_multiplier in moneyCalc()
 var animal2_magnetron_duration = 0;//this is being added
@@ -632,7 +711,13 @@ var foundry_components_multiplier_qm = 1;//quantum multiplier
 var foundry_production_flag;//whether the foundry is in production mode or not
 var fccu_stage;//handling the foundry progress bar
 var fccu_level;//handling the foundry progress bar
+/**
+ * 铸造厂当前浪费量
+ */
 var foundry_waste;
+/**
+ * 铸造厂浪费上限
+ */
 var foundry_waste_limit;
 //radiator
 var radiator_unlock_upgrade_price;
@@ -666,8 +751,19 @@ var pc_unlock_upgrade_price;
 var pc_emission_upgrade_price;
 var pc_emission_boost = 1;//qm upgrade
 //gambling facility
+/**
+ * 同步加速器收集的符号集合
+ */
 var gambling_choice = [];//the symbol that was chosen
+/**
+ * 同步加速器提供的超速次数.
+ */
 var gambling_boosts = 0;
+/**
+ * 同步加速器能否收集标识  
+ * 0 - 可以收集符号
+ * 1 - 不可以收集符号
+ */
 var gambling_collect_flag = 1;//whether a symbol was collected or not from the armed magnetron; default - 1
 
 
@@ -714,7 +810,18 @@ var telescope_list = [];
 var last_animal = 999;
 var last_animal_id;
 var scientific_ui = 0;//whether to show scientific format
+/**
+ * 磁控管显示符号集  
+ * ['⌽', '⌓', '⎔', '⎊', '⍿', '⍙']
+ */
 var magnetron_probability_game_set = ['⌽', '⌓', '⎔', '⎊', '⍿', '⍙'];
+/**
+ * Array[3] 用于暂存以下数据:  
+ * buymax_toggle_flag  
+ * rlab_autobuy_toggle_flag  
+ * night_shift  
+ * 用于正确停止发电机,直到重启后再开启自动化
+ */
 var autobuy_purse = [0, 0, 0];
 var rank_block_show_details_flag = 0;
 var battery_min_flag = 0;
@@ -2624,6 +2731,7 @@ $(document).ready(function () {
     rebootOk();
   });
 
+  //无用
   warp_panel1_upgrade.click(function () {
     if (prestige_flag == 0) { return; }
 
@@ -2649,6 +2757,9 @@ $(document).ready(function () {
 
 
   });//on by default
+
+
+  // 扭曲升级 自动购买发电机供应和电源
   warp_panel2_upgrade.click(function () {
     if (prestige_flag == 0) { warpViewWarning(); return; }
 
@@ -2674,6 +2785,7 @@ $(document).ready(function () {
     } else { PlayAudio(11); }
 
   });
+  // 扭曲升级 自动购买实验室项目
   warp_panel3_upgrade.click(function () {
     if (prestige_flag == 0) { warpViewWarning(); return; }
 
@@ -2697,6 +2809,7 @@ $(document).ready(function () {
     } else { PlayAudio(11); }
 
   });
+  // 扭曲升级 机器最大购买
   warp_panel4_upgrade.click(function () {
     if (prestige_flag == 0) { warpViewWarning(); return; }
 
@@ -2719,7 +2832,7 @@ $(document).ready(function () {
     } else { PlayAudio(11); }
 
   });
-
+  // 扭曲升级 磁控管持续时间
   warp_magnetron_duration_upgrade.click(function () {
 
     if (prestige_flag == 0) { warpViewWarning(); return; }
@@ -2740,6 +2853,7 @@ $(document).ready(function () {
     } else { PlayAudio(11); }
 
   });
+  // 扭曲升级 磁控管倍率
   warp_magnetron_multiplier_upgrade.click(function () {
 
     if (prestige_flag == 0) { warpViewWarning(); return; }
@@ -2760,6 +2874,7 @@ $(document).ready(function () {
     } else { PlayAudio(11); }
 
   });
+  // 扭曲升级 磁控管警报
   warp_magnetron_alerting_upgrade.click(function () {
 
     if (prestige_flag == 0) { warpViewWarning(); return; }
@@ -2780,7 +2895,7 @@ $(document).ready(function () {
     } else { PlayAudio(11); }
 
   });
-
+  // 扭曲升级 工程师升级-工程师 开启工程巢穴 电源上限自动升级
   warp_rank1_upgrade.click(function () {
 
     if (prestige_flag == 0) { warpViewWarning(); return; }
@@ -2799,28 +2914,6 @@ $(document).ready(function () {
       night_shift = 1;
       night_shift_toggle.attr("class", "engden_on").text("ON");
       autobuy_purse[2] = night_shift;
-
-      prestigeState();
-
-    } else { PlayAudio(11); }
-
-  });
-  warp_rank2_upgrade.click(function () {
-
-    if (prestige_flag == 0) { warpViewWarning(); return; }
-
-    var ac_owned = antimatter_cubes - antimatter_cubes_spent;
-
-    if (ac_owned - warp_price >= 0) {
-
-      PlayAudio(2);
-
-      antimatter_cubes_spent += warp_price;
-      warp_price *= warp_price_rate;
-
-      lscanner_state = 1;//this defines the player being a Floor Admin
-      ogr = 10;//this is also set in prestige_ok event
-      recency = 0;//and this is set here, so that the first time lscanner is activated, lifeforms are always present regardless of the ratio of antimatter earned in the previous play
 
       prestigeState();
 
@@ -2848,6 +2941,7 @@ $(document).ready(function () {
     } else { PlayAudio(11); }
 
   });
+  // 扭曲升级 工程师升级-楼层管理员1 
   warp_rank2_training1_upgrade.click(function () {
 
     if (prestige_flag == 0) { warpViewWarning(); return; }
@@ -2868,6 +2962,7 @@ $(document).ready(function () {
     } else { PlayAudio(11); }
 
   });
+  // 扭曲升级 工程师升级-楼层管理员2
   warp_rank2_training2_upgrade.click(function () {
 
     if (prestige_flag == 0) { warpViewWarning(); return; }
@@ -2888,8 +2983,30 @@ $(document).ready(function () {
     } else { PlayAudio(11); }
 
   });
+  // 扭曲升级 工程师升级-楼层管理员3 生命形式扫描仪
+  warp_rank2_upgrade.click(function () {
 
-  //Primal Grind, Sharpshooter, Positrons, Gen X
+    if (prestige_flag == 0) { warpViewWarning(); return; }
+
+    var ac_owned = antimatter_cubes - antimatter_cubes_spent;
+
+    if (ac_owned - warp_price >= 0) {
+
+      PlayAudio(2);
+
+      antimatter_cubes_spent += warp_price;
+      warp_price *= warp_price_rate;
+
+      lscanner_state = 1;//this defines the player being a Floor Admin
+      ogr = 10;//this is also set in prestige_ok event
+      recency = 0;//and this is set here, so that the first time lscanner is activated, lifeforms are always present regardless of the ratio of antimatter earned in the previous play
+
+      prestigeState();
+
+    } else { PlayAudio(11); }
+
+  });
+  //扭曲升级 挑战 Primal Grind 建造5座发电站
   warp_challenge1_upgrade.click(function () {
 
     if (prestige_flag == 0) { warpViewWarning(); return; }
@@ -2902,6 +3019,7 @@ $(document).ready(function () {
     prestigeState();
 
   });
+  //扭曲升级 挑战 Sharpshooter 正好555个反物质立方的时候扭曲
   warp_challenge2_upgrade.click(function () {
 
     if (prestige_flag == 0) { warpViewWarning(); return; }
@@ -2912,6 +3030,7 @@ $(document).ready(function () {
     prestigeState();
 
   });
+  //扭曲升级 挑战 Positrons 开采超过555个正电子
   warp_challenge3_upgrade.click(function () {
 
     if (prestige_flag == 0) { warpViewWarning(); return; }
@@ -2922,6 +3041,7 @@ $(document).ready(function () {
     prestigeState();
 
   });
+  //扭曲升级 挑战 Gen X 发电机等级均达到上限
   warp_challenge4_upgrade.click(function () {
 
     if (prestige_flag == 0) { warpViewWarning(); return; }
@@ -2932,6 +3052,7 @@ $(document).ready(function () {
     prestigeState();
 
   });
+  //扭曲升级 挑战 量子擦拭后不采用扭曲,完成5座发电站
   buff_challenge1_upgrade.click(function () {
 
     if (prestige_flag == 0) { warpViewWarning(); return; }
@@ -2942,19 +3063,20 @@ $(document).ready(function () {
     prestigeState();
 
   });
-
+  //扭曲升级 量子升级 量子擦拭
   quantum_wipe_upgrade.click(function () {
 
     if (prestige_flag == 0) { warpViewWarning(); return; }
 
     PlayAudio(8);
-
+    //验证选择了多少个量子升级
     if (countQUF(quf_temp_bag) == 0) { warp_qm_warning.show(); return; }
     else { warp_qm_warning.hide(); }
 
     warp_qm_confirm.show();
 
   });
+  //扭曲升级 量子升级 提醒至少选择一个量子升级界面 关闭事件
   warp_qm_warning_close.click(function () {
 
     PlayAudio(10);
@@ -2962,6 +3084,7 @@ $(document).ready(function () {
     warp_qm_warning.hide();
 
   });
+  //扭曲升级 量子升级 确认量子擦拭界面 取消事件
   warp_qm_confirm_cancel.click(function () {
 
     PlayAudio(10);
@@ -2969,6 +3092,7 @@ $(document).ready(function () {
     warp_qm_confirm.hide();
 
   });
+  //扭曲升级 量子升级 确认量子擦拭界面 确认事件
   warp_qm_confirm_ok.click(function () {/*quantum wipe!*/
 
     //setting the actual quf array
@@ -4785,6 +4909,7 @@ $(document).ready(function () {
   });
 
   //synchrotron
+  //同步加速器 ,收集点击事件
   gambling_collect_upgrade.click(function () {
 
     if (magnetron_state != 1 && gambling_collect_flag == 0) {//if magnetron is either running or armed, we can collect
@@ -4811,6 +4936,7 @@ $(document).ready(function () {
         if (gambling_choice[0] == gambling_choice[1] && gambling_choice[1] == gambling_choice[2]) { gambling_boosts += 5; }
         else { gambling_boosts += 1; }
 
+        //同步加速器特殊奖励,减少铸造厂浪费上限.
         if (gambling_choice[0] == 2 && gambling_choice[1] == 4 && gambling_choice[2] == 5) {
 
           secret1_flag = 1;
@@ -4829,6 +4955,7 @@ $(document).ready(function () {
 
     }
   });
+  //同步加速器 超速点击事件
   gambling_boosts_upgrade.click(function () {
 
     //the overdrive logic is a copy of overdrive_upgrade.click(), so any changes made there should be done here
@@ -5187,10 +5314,12 @@ function Init() {
   buildRNG(researchSeed);
 
   //updating UI with the established values
+  //更新
   InventoryUpdate();
   nPCC();//updating the positron cubes number
 
   //starting the Grand Telescope
+  //开启电报
   startTelescope();
 
   //hiding UI elements
@@ -5531,22 +5660,38 @@ function Four() {
 
   }, 80 * time_fundamental);
 }
-
+/**
+ * 反物质数量更新    
+ * 按键更新  
+ * 能源进度条更新  
+ * 统计窗口更新  
+ * 生命扫描仪重新装填更新   
+ * 自动购买  
+ * 自动扭曲  
+ */
 function InventoryUpdate() {
 
+  //反物质数据更新
   nAC();//nextAntimatterCost
 
   ultimate_ratio = antimatter / antimatter_cubes * 25;
 
+  // 按键状态更新
   storeState();
+  //能源进度条更新
   progress_money();
 
   //this is here, because I want the progress bar to first get filled and then get reduced
   //placing this in moneyCalc() would lead to the progress bar simply never filling up
-  if (night_shift == 1 && money == money_limit) { autoPowerLimit(); }
+  //自动购买
+  if (night_shift == 1 && money == money_limit) { 
+    autoPowerLimit(); 
+  }
 
   overdrive_label.text("⌬" + numT(total_money) + "/⌬" + numT(overdrive_price));
 
+  
+  //统计窗口更新
   //stats go here, after all checks, so that in case something gets updated later, an incorrect value does not flash here, like when antimatter is not yet set to antimatter++;
   if (stats_window_flag == 1) {
     var tillNextAntimatter_value = nextAntimatterCost - all_time_money;
@@ -5557,12 +5702,14 @@ function InventoryUpdate() {
     ac_stock_label.text(numT(antimatter_cubes - antimatter_cubes_spent));
   }
 
+  //生命形式扫描仪 重新填充数据更新 
   if (lscanner_state == 1) {//repopulation
     if (ultimate_ratio < 100) { repopulation_label.text(numT(ultimate_ratio)); }
     else { repopulation_label.text(100); }
   }
 
   //automatic prestige
+  //总工程师自动扭曲
   if (chief_warp_check == 1) {
     if (antimatter_cubes == 0 && antimatter >= 5) {//first time prestige when you've got 5 antimatter
       ccPrestige();
@@ -5956,6 +6103,9 @@ function prestigeInit() {
   prestigeState();
 
 }
+/**
+ * 重置扭曲升级中的各类数据
+ */
 function resetPrestige() {
   //this function resets all prestige upgrades to their original values, as well as positrons, antimatter, animal upgrades and other upgrades that work across prestige cycles
 
@@ -6026,6 +6176,7 @@ function resetPrestige() {
   money_limit_upgrade_price_init = 10;
 
   //chief_check block; these variables are set in a way to prepare the game for chief engineer automation (chief_check=1); because it will buy battery and magnetron, we need to reset certain variables that would otherwise be irrelevant in the normal run;
+
   charge = 0;//if this is not reset, chief_check will immediately buy magnetron
 
   gambling_choice = [];//Quantum Wipe and new Power Plant resets Synchrotron progress
@@ -6175,6 +6326,9 @@ function ppaState() {
 function ppaLoop() {
   one_x += 1; $(pp_quadrant).css('background-position', + one_x + 'px 0px');
 }
+/**
+ * 重置发电厂相关数据。
+ */
 function ppaReset() {
   powerplants_amount = 0;
   time_fundamental = 1;
@@ -6453,6 +6607,9 @@ function ccSwitch() {
   ccSetup();
 
 }
+/**
+ * 自动扭曲
+ */
 function ccPrestige() {//automatic prestige
 
   var ac_owned;
@@ -6464,8 +6621,10 @@ function ccPrestige() {//automatic prestige
 
   prestigeOk();
 
+  //持有反物质数量
   ac_owned = antimatter_cubes - antimatter_cubes_spent;
 
+  // 自动升级扭曲升级
   //first we go through the ranks, then go for magnetron upgrades
   if (ac_owned - warp_price >= 0 && engden_state == 0) {
     warp_rank1_upgrade.trigger("click");
@@ -6910,7 +7069,9 @@ function buildLifeformsCollection() {
   }//loop
 
 }
-
+/**
+ * 自动购买电源上限
+ */
 function autoPowerLimit() {
 
   money -= money_limit_upgrade_price;
@@ -7446,6 +7607,9 @@ function Telescope() {
   //console.log(telescope_list);
 
 }
+/**
+ * 开启电报
+ */
 function startTelescope() {
 
   var counter = 0;
@@ -8216,6 +8380,9 @@ function LoadGame() {
   SaveLoop();
 
 }
+/**
+ * 开启自动保存
+ */
 function SaveLoop() {
 
   //this is one the only two functions that automatically triggers save, the other being magnetronRequest() with Synchrotron enabled (to prevent cheating). No other automatic functions or processes in the game will save the game. The only other way to save is for the player to hit the save_upgrade button.
@@ -8432,6 +8599,9 @@ function closeWindows() {//closes all the windows
   magicnumber_infobox.hide(); magicnumber_window_flag = 0;
   incorrectsave_infobox.hide();
 }
+/**
+ * 滚动窗口回到最上方
+ */
 function windowScroll() {
   window.scroll({
     top: 0,
@@ -8660,6 +8830,9 @@ function progress_antimatter() {
   pb_antimatter_indicator.width(progressBarWidth);
 }
 
+/**
+ * 处理能源进度条显示
+ */
 function progress_money() {
   var percent = money / money_limit * 100;
   if (percent > 100) { percent = 100; }
@@ -8690,7 +8863,8 @@ function GeneratorRatios() {
 }
 
 /**
- * 计算反物质以及反物质立方的数量
+ * 计算反物质立方的数量
+ * 以及计算下次获取立方所需总计能源
  */
 function nAC() {//nextAntimatterCost
 
@@ -8706,12 +8880,13 @@ function nAC() {//nextAntimatterCost
     //UI更新
     antimatter_label.text(numT(antimatter));
 
-    //更新 上次获取立方所需总计反物质
+    //更新 上次获取立方所需总计能源
     prevAntimatterCost = AM_BASE_COST * Math.pow((all_time_antimatter), 3);
   }
-  //更新 下次获取立方所需总计反物质
+  //更新 下次获取立方所需总计能源
   nextAntimatterCost = AM_BASE_COST * Math.pow((all_time_antimatter + 1), 3);
 
+  //更新溢出乘数
   if (antimatter_cubes == 0) {//antimatter spillover effect
     am_radiation_multiplier = Math.floor((antimatter) / 100);
     if (am_radiation_multiplier < 1) { am_radiation_multiplier = 1; }
@@ -8720,7 +8895,10 @@ function nAC() {//nextAntimatterCost
   //更新反物质进度条
   progress_antimatter();
 }
-
+/**
+ * 计算正电子立方体数量
+ * 以及下次生产正电子立方所需正电子数量
+ */
 function nPCC() {//nextPositronCubesCost
 
   if (all_time_positrons >= nextPositronCubesCost) {
